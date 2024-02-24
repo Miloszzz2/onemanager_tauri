@@ -36,8 +36,7 @@
         "center": true,
         "transparent": true,
         "decorations": false,
-        "alwaysOnTop": true,
-        "skipTaskbar": true
+        "alwaysOnTop": true
       }
     ],
     "security": {
