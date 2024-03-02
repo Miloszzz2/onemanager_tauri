@@ -5,7 +5,6 @@
     import { register } from "@tauri-apps/api/globalShortcut";
     import { invoke } from "@tauri-apps/api/tauri";
     import { onMount } from "svelte";
-    import { Layers } from "svelte-radix";
     let open = true;
     let inputvalue = "";
     let value = "";
@@ -85,28 +84,30 @@
     });
 </script>
 
-<Command.Dialog bind:open bind:value>
-    <Command.Input placeholder="Type a command or search..." />
-    <Command.List>
-        <Command.Empty>No results found.</Command.Empty>
-        <Command.Group heading="Apps">
-            {#each programs as app}
-                <!-- svelte-ignore a11y-no-static-element-interactions -->
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <div
-                    class="overflow-y-hidden"
-                    on:click={() => {
-                        invoke("runprogram", { path: app });
-                        closeMenu();
-                    }}
-                >
-                    <Command.Item>
-                        <span>{getAppNameFromPath(app)}</span>
-                    </Command.Item>
-                </div>
-            {/each}
-        </Command.Group>
-        <Command.Separator />
-    </Command.List>
-</Command.Dialog>
-<ModeWatcher />
+{#if programs.length > 0}
+    <Command.Dialog bind:open bind:value>
+        <Command.Input placeholder="Type a command or search..." />
+        <Command.List>
+            <Command.Empty>No results found.</Command.Empty>
+            <Command.Group heading="Apps">
+                {#each programs as app}
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <div
+                        class="overflow-y-hidden"
+                        on:click={() => {
+                            invoke("runprogram", { path: app });
+                            closeMenu();
+                        }}
+                    >
+                        <Command.Item>
+                            <span>{getAppNameFromPath(app)}</span>
+                        </Command.Item>
+                    </div>
+                {/each}
+            </Command.Group>
+            <Command.Separator />
+        </Command.List>
+    </Command.Dialog>
+    <ModeWatcher />
+{/if}
