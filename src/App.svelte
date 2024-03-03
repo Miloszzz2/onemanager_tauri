@@ -33,9 +33,9 @@
     }
     let programs: string[] = [];
     appWindow.listen("created", async () => {
-        invoke("getprogrampaths").then(
-            (message) => (programs = fixBackslashes(message))
-        );
+        invoke("getprogrampaths").then((message) => {
+            programs = fixBackslashes(message);
+        });
         appWindow.setFocus();
         await register("Control+Shift+K", async () => {
             if (open === true) {
@@ -76,7 +76,7 @@
                 console.log(programs.length);
             }
         }
-
+        console.log(programs.length);
         document.addEventListener("keydown", handleKeydown);
         return () => {
             document.removeEventListener("keydown", handleKeydown);
@@ -101,6 +101,11 @@
                         }}
                     >
                         <Command.Item>
+                            <img
+                                class="h-6 w-6 mr-3"
+                                src={`app_icons/${getAppNameFromPath(app)}.png`}
+                                alt="app_icons/HWMonitor.png"
+                            />
                             <span>{getAppNameFromPath(app)}</span>
                         </Command.Item>
                     </div>
