@@ -1,66 +1,60 @@
 <script lang="ts">
     import { ModeWatcher } from "mode-watcher";
+    import QuestionMark from "svelte-radix/QuestionMark.svelte";
     import * as Command from "$lib/components/ui/command";
     import { appWindow } from "@tauri-apps/api/window";
-    import { register } from "@tauri-apps/api/globalShortcut";
+    import { unregister, register } from "@tauri-apps/api/globalShortcut";
     import { invoke } from "@tauri-apps/api/tauri";
     import { onMount } from "svelte";
+    import { WebviewWindow } from "@tauri-apps/api/window";
+    import { fixBackslashes } from "./utils/fixBackslahes";
+    import { getAppNameFromPath } from "./utils/getAppNameFromPath";
+    import { delay } from "./utils/delay";
+    import { createSettingsWindow } from "./utils/createSettingsWindow";
+    import { emit, listen } from "@tauri-apps/api/event";
+    /* Imports here */
+
     let open = true;
     let inputvalue = "";
     let value = "";
-
-    function delay(ms: number) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
-
-    function fixBackslashes(arr: any) {
-        let res: string[] = [];
-        arr.map((el: string) => {
-            res.push(el.replace(/\\\\/g, "\\").replace(/^\\+|\\+$/g, ""));
-        });
-        return res;
-    }
-
-    function getAppNameFromPath(app: string) {
-        let lastIndex = app.lastIndexOf("\\");
-
-        return (
-            app
-                .substring(lastIndex + 1, app.length - 4)
-                .charAt(0)
-                .toUpperCase() + app.substring(lastIndex + 2, app.length - 4)
-        );
-    }
     let programs: string[] = [];
-    appWindow.listen("created", async () => {
+
+    window.addEventListener("load", async () => {
         invoke("getprogrampaths").then((message) => {
             programs = fixBackslashes(message);
         });
         appWindow.setFocus();
+
+        await unregister("Control+Shift+K");
         await register("Control+Shift+K", async () => {
-            if (open === true) {
-                inputvalue = "";
-                open = !open;
-                await delay(500);
-                appWindow.minimize();
+            if (open == true) {
+                closeMenu();
             } else {
                 await appWindow.unminimize();
                 appWindow.setFocus();
                 await delay(500);
-                open = !open;
+                open = true;
             }
+            console.log(open);
         });
+
+        console.log("registered");
     });
+
     async function closeMenu() {
         inputvalue = "";
-        open = !open;
-        await delay(500);
+        open = false;
+        await delay(201);
         appWindow.minimize();
     }
-
-    appWindow.emit("created");
+    const sendProgramPathsInterval = setInterval(() => {
+        console.log("sending paths...");
+        emit("click", {
+            programs,
+        });
+    }, 2000);
     onMount(() => {
-        function handleKeydown(e: KeyboardEvent) {
+        async function handleKeydown(e: KeyboardEvent) {
             if (e.key === "Enter") {
                 invoke("runprogram", { path: value });
                 closeMenu();
@@ -71,17 +65,28 @@
                         indextodel = index;
                 });
                 programs.splice(indextodel, 1);
-
                 programs = programs;
                 console.log(programs.length);
+            } else if (e.key === "Escape") {
+                closeMenu();
             }
         }
+
+        listen("stopSending", () => {
+            clearInterval(sendProgramPathsInterval);
+            console.log("stopped sending");
+        });
+
         console.log(programs.length);
         document.addEventListener("keydown", handleKeydown);
         return () => {
             document.removeEventListener("keydown", handleKeydown);
         };
     });
+    async function openSettingsWindow() {
+        createSettingsWindow(programs);
+    }
+    console.log(appWindow.label);
 </script>
 
 {#if programs.length > 0}
@@ -113,6 +118,11 @@
             </Command.Group>
             <Command.Separator />
         </Command.List>
+        <QuestionMark
+            on:click={openSettingsWindow}
+            color="black"
+            class="absolute bottom-4 right-6 bg-slate-50 rounded-full z-40 h-10 w-10 p-2 border cursor-pointer"
+        />
     </Command.Dialog>
     <ModeWatcher />
 {/if}

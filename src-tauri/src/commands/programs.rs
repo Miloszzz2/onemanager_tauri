@@ -29,7 +29,7 @@ pub(crate) fn getprogrampaths() -> Result<Vec<String>, String> {
                 "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons/{}.png",
                 file_name_without_extension(&display_icon_without_prefix)
             );
-            println!("{}", pathtocheck);
+
             if file_exists(display_icon_without_prefix.clone()) {
                 if !file_exists(pathtocheck) {
                     let args = [

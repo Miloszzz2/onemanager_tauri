@@ -17,6 +17,7 @@
                 "open": true
             },
             "window": {
+                "create": true,
                 "minimize": true,
                 "unminimize": true,
                 "setFocus": true,
@@ -36,7 +37,6 @@
                 "center": true,
                 "transparent": true,
                 "decorations": false,
-                "alwaysOnTop": true,
                 "resizable": false
             }
         ],
