@@ -84,7 +84,16 @@
         };
     });
     async function openSettingsWindow() {
-        createSettingsWindow(programs);
+        if (WebviewWindow.getByLabel("Settings") == null)
+            createSettingsWindow(programs);
+        else {
+            if (WebviewWindow.getByLabel("Settings")?.isMinimized()) {
+                WebviewWindow.getByLabel("Settings")?.unminimize();
+                WebviewWindow.getByLabel("Settings")?.setFocus();
+            } else {
+                WebviewWindow.getByLabel("Settings")?.setFocus();
+            }
+        }
     }
     console.log(appWindow.label);
 </script>

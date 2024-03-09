@@ -5,6 +5,10 @@ export async function createSettingsWindow(programs: string[]) {
         width: 1000,
         height: 600,
         title: "settings",
+        transparent: true,
+        decorations: false,
+        alwaysOnTop: true,
+        resizable: false,
     });
     webview.emit("tauri://created", function () {
         console.log("robie okno");

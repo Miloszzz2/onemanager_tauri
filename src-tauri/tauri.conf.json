@@ -21,8 +21,8 @@
                 "minimize": true,
                 "unminimize": true,
                 "setFocus": true,
-                "hide": true,
-                "show": true
+                "startDragging": true,
+                "close": true
             },
             "globalShortcut": {
                 "all": true
@@ -37,7 +37,8 @@
                 "center": true,
                 "transparent": true,
                 "decorations": false,
-                "resizable": false
+                "resizable": false,
+                "alwaysOnTop": true
             }
         ],
         "security": {
