@@ -55,7 +55,7 @@
 >
     <Resizable.Pane defaultSize={8}>
         <Resizable.PaneGroup direction={"horizontal"} class="border-b">
-            <Resizable.Pane defaultSize={20} minSize={20} maxSize={20}>
+            <Resizable.Pane defaultSize={10} minSize={10} maxSize={10}>
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div
@@ -69,7 +69,7 @@
                     <p class="text-md font-medium">Settings</p>
                 </div>
             </Resizable.Pane>
-            <Resizable.Pane defaultSize={80}
+            <Resizable.Pane defaultSize={90}
                 ><div
                     data-tauri-drag-region
                     class="titlebar w-100 flex justify-end p-3 gap-2"
