@@ -2,82 +2,58 @@ import * as Icons from "./icons.js";
 
 import type { ComponentType } from "svelte";
 import type { Icon } from "lucide-svelte";
+import { Archive } from "svelte-radix";
 
 export type Route = {
     title: string;
     label: string;
+    href: string;
     icon: ComponentType<Icon>;
     variant: "default" | "ghost";
 };
 
 export const primaryRoutes: Route[] = [
     {
-        title: "Inbox",
-        label: "128",
-        icon: Icons.Inbox,
+        title: "Overview",
+        href: "/",
+        label: "",
+        icon: Icons.Settings,
         variant: "default",
     },
-    {
-        title: "Drafts",
-        label: "9",
-        icon: Icons.File,
-        variant: "ghost",
-    },
-    {
-        title: "Sent",
-        label: "",
-        icon: Icons.Send,
-        variant: "ghost",
-    },
-    {
-        title: "Junk",
-        label: "23",
-        icon: Icons.ArchiveX,
-        variant: "ghost",
-    },
-    {
-        title: "Trash",
-        label: "",
-        icon: Icons.Trash2,
-        variant: "ghost",
-    },
-    {
-        title: "Archive",
-        label: "",
-        icon: Icons.Archive,
-        variant: "ghost",
-    },
-];
 
-export const secondaryRoutes: Route[] = [
     {
-        title: "Social",
-        label: "972",
-        icon: Icons.Users,
+        title: "Apps",
+        href: "/apps",
+        label: "",
+        icon: Icons.LayoutGrid,
         variant: "ghost",
     },
     {
-        title: "Updates",
-        label: "342",
-        icon: Icons.Users,
+        title: "Integrations",
+        label: "",
+        href: "/integrations",
+        icon: Icons.Blocks,
         variant: "ghost",
     },
     {
-        title: "Forums",
-        label: "128",
-        icon: Icons.MessagesSquare,
+        title: "Profile",
+        href: "/profile",
+        label: "",
+        icon: Icons.CircleUser,
         variant: "ghost",
     },
     {
-        title: "Shopping",
-        label: "8",
-        icon: Icons.ShoppingCart,
+        title: "Preferences",
+        label: "",
+        href: "/preferences",
+        icon: Icons.Settings2,
         variant: "ghost",
     },
     {
-        title: "Promotions",
-        label: "21",
-        icon: Icons.Archive,
+        title: "Help",
+        label: "",
+        href: "/help",
+        icon: Icons.CircleHelp,
         variant: "ghost",
     },
 ];

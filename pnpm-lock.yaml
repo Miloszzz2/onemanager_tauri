@@ -67,6 +67,9 @@ devDependencies:
   svelte-check:
     specifier: ^3.4.6
     version: 3.6.4(postcss-load-config@5.0.3)(postcss@8.4.35)(svelte@4.2.11)
+  svelte-routing:
+    specifier: ^2.12.0
+    version: 2.12.0
   tailwindcss:
     specifier: ^3.3.6
     version: 3.4.1
@@ -1714,6 +1717,10 @@ packages:
     dependencies:
       svelte: 4.2.11
     dev: false
+
+  /svelte-routing@2.12.0:
+    resolution: {integrity: sha512-6i4Mncy4P2b7gD7+BOT9JzQvrfGfGXqFra8VXYU5//bpn6AzJ0PLEhH1E/KwY2AxleOiS/8Nm37MGuic2kn15A==}
+    dev: true
 
   /svelte@4.2.11:
     resolution: {integrity: sha512-YIQk3J4X89wOLhjsqIW8tqY3JHPuBdtdOIkASP2PZeAMcSW9RsIjQzMesCrxOF3gdWYC0mKknlKF7OqmLM+Zqg==}
