@@ -96,6 +96,20 @@
         }
     }
     console.log(appWindow.label);
+    function SortPathsByFileNames(paths: string[]) {
+        paths.sort((a, b) => {
+            const nameA = getAppNameFromPath(a); // Convert names to uppercase for case-insensitive comparison
+            const nameB = getAppNameFromPath(b);
+            if (nameA < nameB) {
+                return -1; // a should come before b in the sorted order
+            }
+            if (nameA > nameB) {
+                return 1; // a should come after b in the sorted order
+            }
+            return 0; // a and b are equivalent
+        });
+        return paths;
+    }
 </script>
 
 {#if programs.length > 0}
@@ -104,7 +118,7 @@
         <Command.List>
             <Command.Empty>No results found.</Command.Empty>
             <Command.Group heading="Apps">
-                {#each programs as app}
+                {#each SortPathsByFileNames(programs) as app}
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <div

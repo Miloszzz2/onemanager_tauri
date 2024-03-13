@@ -1,6 +1,6 @@
-use std::process::Command;
+use std::process::{ Command, Output };
 use std::path::Path;
-
+use walkdir::WalkDir;
 #[tauri::command]
 pub(crate) fn getprogrampaths() -> Result<Vec<String>, String> {
     let apps = installed::list().map_err(|err| err.to_string())?;
@@ -32,34 +32,99 @@ pub(crate) fn getprogrampaths() -> Result<Vec<String>, String> {
 
             if file_exists(display_icon_without_prefix.clone()) {
                 if !file_exists(pathtocheck) {
-                    let args = [
-                        format!("'{}'", display_icon_without_prefix),
-                        format!("'{}'", file_name_without_extension(&display_icon_without_prefix)),
-                        format!(
-                            "'{}'",
-                            "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons"
-                        ),
-                    ];
-
-                    let python_command_with_args = format!(
-                        "source venv/Scripts/activate && python main.py {}",
-                        args.join(" ")
+                    let output = generate_icon(&display_icon_without_prefix);
+                    if output.status.success() {
+                        options.push(
+                            replace_double_backslashes(&display_icon_without_prefix.to_string())
+                        );
+                    }
+                } else {
+                    options.push(
+                        replace_double_backslashes(&display_icon_without_prefix.to_string())
                     );
-
-                    let output = Command::new("sh")
-                        .current_dir("./iconExtract")
-                        .arg("-c")
-                        .arg(python_command_with_args)
-                        .output()
-                        .expect("Failed to execute command");
-
-                    println!("Python script output: {:?}", output);
                 }
-                options.push(display_icon_without_prefix.to_string());
+            }
+        }
+    }
+    for entry in WalkDir::new("C:\\ProgramData\\Microsoft\\Windows\\Start Menu")
+        .into_iter()
+        .filter_map(|e| e.ok()) {
+        let path = entry.path().to_string_lossy();
+        if path.contains(".lnk") {
+            let mut good_path = entry.path().to_string_lossy().to_mut().to_string();
+            good_path.truncate(good_path.len() - 4);
+
+            let shortcut = lnk::ShellLink::open(entry.path()).unwrap();
+
+            if let Some(relative) = shortcut.relative_path() {
+                if
+                    relative.contains(".exe") &&
+                    !relative.contains("uninstall") &&
+                    !relative.contains("Uninstall") &&
+                    !relative.contains("unins") &&
+                    !relative.contains("Installer") &&
+                    !relative.contains("setup") &&
+                    !relative.contains("{") &&
+                    !relative.contains("dll")
+                {
+                    let display_icon_without_prefix = add_drive_to_path(&relative);
+                    if !options.contains(&display_icon_without_prefix) {
+                        let pathtocheck = format!(
+                            "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons/{}.png",
+                            file_name_without_extension(&display_icon_without_prefix)
+                        );
+
+                        if file_exists(display_icon_without_prefix.clone()) {
+                            if !file_exists(pathtocheck) {
+                                let output = generate_icon(&display_icon_without_prefix);
+                                if output.status.success() {
+                                    options.push(display_icon_without_prefix.to_string());
+                                }
+                            } else {
+                                options.push(display_icon_without_prefix.to_string());
+                            }
+                        }
+                    }
+                }
             }
         }
     }
     Ok(options)
+}
+
+fn generate_icon(display_icon_without_prefix: &str) -> Output {
+    let args = [
+        format!("'{}'", display_icon_without_prefix),
+        format!("'{}'", file_name_without_extension(&display_icon_without_prefix)),
+        format!("'{}'", "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons"),
+    ];
+
+    let python_command_with_args = format!(
+        "source venv/Scripts/activate && python main.py {}",
+        args.join(" ")
+    );
+
+    let output = Command::new("sh")
+        .current_dir("./iconExtract")
+        .arg("-c")
+        .arg(python_command_with_args)
+        .output()
+        .expect("Failed to execute command");
+    return output;
+}
+
+fn replace_double_backslashes(s: &str) -> String {
+    s.replace("\\\\", "\\")
+}
+fn add_drive_to_path(s: &str) -> String {
+    if let Some(index) = s.rfind("..\\") {
+        // If "..//" is found, prepend "C:/" to the string
+        let mut full_path = "C:\\".to_owned();
+        full_path.push_str(&s[index + 3..]); // Move index 4 positions to exclude "..//"
+        return full_path;
+    }
+    // If "..//" is not found, return the original string
+    s.to_string()
 }
 
 fn file_exists(file_path: String) -> bool {
