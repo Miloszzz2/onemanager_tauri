@@ -6,15 +6,11 @@ mod commands {
 }
 
 fn main() {
-    tauri::Builder
-        ::default()
-        .invoke_handler(
-            tauri::generate_handler![
-                crate::commands::programs::getprogrampaths,
-                crate::commands::programs::runprogram
-            ]
-        )
-
+    tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![
+            crate::commands::programs::getprogrampaths,
+            crate::commands::programs::run_program
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

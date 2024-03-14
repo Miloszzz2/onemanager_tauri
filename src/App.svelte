@@ -12,6 +12,8 @@
     import { delay } from "./utils/delay";
     import { createSettingsWindow } from "./utils/createSettingsWindow";
     import { emit, listen } from "@tauri-apps/api/event";
+    import Button from "$lib/components/ui/button/button.svelte";
+    import Reload from "svelte-radix/Reload.svelte";
     /* Imports here */
 
     let open = true;
@@ -19,7 +21,7 @@
     let value = "";
     let programs: string[] = [];
 
-    window.addEventListener("load", async () => {
+    window.addEventListener("DOMContentLoaded", async () => {
         invoke("getprogrampaths").then((message) => {
             programs = fixBackslashes(message);
         });
@@ -56,7 +58,7 @@
     onMount(() => {
         async function handleKeydown(e: KeyboardEvent) {
             if (e.key === "Enter") {
-                invoke("runprogram", { path: value });
+                invoke("run_program", { path: value });
                 closeMenu();
             } else if (e.key === "Delete") {
                 let indextodel = 0;
@@ -124,7 +126,7 @@
                     <div
                         class="overflow-y-hidden"
                         on:click={() => {
-                            invoke("runprogram", { path: app });
+                            invoke("run_program", { path: app });
                             closeMenu();
                         }}
                     >
@@ -141,11 +143,24 @@
             </Command.Group>
             <Command.Separator />
         </Command.List>
-        <QuestionMark
-            on:click={openSettingsWindow}
-            color="black"
-            class="absolute bottom-4 right-6 bg-slate-50 rounded-full z-40 h-10 w-10 p-2 border cursor-pointer"
-        />
+        <Button
+            class="absolute bottom-4 right-6 rounded-full z-40 h-10 w-10 p-2 border cursor-pointer"
+        >
+            <QuestionMark
+                on:click={openSettingsWindow}
+                class="dark:white light:black"
+            />
+        </Button>
     </Command.Dialog>
-    <ModeWatcher />
+{:else}
+    <div
+        class="h-full flex items-center justify-center rounded-lg bg-background"
+        style="height:349px;"
+    >
+        <Button variant={"ghost"}>
+            <Reload class="mr-2 h-4 w-4 animate-spin" />
+            Loading...
+        </Button>
+    </div>
 {/if}
+<ModeWatcher />

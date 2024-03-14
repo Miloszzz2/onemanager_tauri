@@ -1,5 +1,5 @@
-use std::process::{ Command, Output };
 use std::path::Path;
+use std::process::{Command, Output};
 use walkdir::WalkDir;
 #[tauri::command]
 pub(crate) fn getprogrampaths() -> Result<Vec<String>, String> {
@@ -8,22 +8,21 @@ pub(crate) fn getprogrampaths() -> Result<Vec<String>, String> {
 
     for app in apps {
         let x = app.dump();
-        if
-            let Some(display_icon) = x
-                .lines()
-                .find(|line| {
-                    line.starts_with("DisplayIcon") &&
-                        line.contains(".exe") &&
-                        !line.contains("uninstall") &&
-                        !line.contains("Uninstall") &&
-                        !line.contains("unins") &&
-                        !line.contains("Installer") &&
-                        !line.contains("setup") &&
-                        !line.contains("{")
-                })
-        {
+        if let Some(display_icon) = x.lines().find(|line| {
+            line.starts_with("DisplayIcon")
+                && line.contains(".exe")
+                && !line.contains("uninstall")
+                && !line.contains("Uninstall")
+                && !line.contains("unins")
+                && !line.contains("Installer")
+                && !line.contains("setup")
+                && !line.contains("{")
+        }) {
             let display_icon_without_prefix = sanitize_path(
-                &display_icon.trim_start_matches("DisplayIcon:").trim().replace("\"", "")
+                &display_icon
+                    .trim_start_matches("DisplayIcon:")
+                    .trim()
+                    .replace("\"", ""),
             );
             let pathtocheck = format!(
                 "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons/{}.png",
@@ -34,21 +33,22 @@ pub(crate) fn getprogrampaths() -> Result<Vec<String>, String> {
                 if !file_exists(pathtocheck) {
                     let output = generate_icon(&display_icon_without_prefix);
                     if output.status.success() {
-                        options.push(
-                            replace_double_backslashes(&display_icon_without_prefix.to_string())
-                        );
+                        options.push(replace_double_backslashes(
+                            &display_icon_without_prefix.to_string(),
+                        ));
                     }
                 } else {
-                    options.push(
-                        replace_double_backslashes(&display_icon_without_prefix.to_string())
-                    );
+                    options.push(replace_double_backslashes(
+                        &display_icon_without_prefix.to_string(),
+                    ));
                 }
             }
         }
     }
     for entry in WalkDir::new("C:\\ProgramData\\Microsoft\\Windows\\Start Menu")
         .into_iter()
-        .filter_map(|e| e.ok()) {
+        .filter_map(|e| e.ok())
+    {
         let path = entry.path().to_string_lossy();
         if path.contains(".lnk") {
             let mut good_path = entry.path().to_string_lossy().to_mut().to_string();
@@ -57,15 +57,14 @@ pub(crate) fn getprogrampaths() -> Result<Vec<String>, String> {
             let shortcut = lnk::ShellLink::open(entry.path()).unwrap();
 
             if let Some(relative) = shortcut.relative_path() {
-                if
-                    relative.contains(".exe") &&
-                    !relative.contains("uninstall") &&
-                    !relative.contains("Uninstall") &&
-                    !relative.contains("unins") &&
-                    !relative.contains("Installer") &&
-                    !relative.contains("setup") &&
-                    !relative.contains("{") &&
-                    !relative.contains("dll")
+                if relative.contains(".exe")
+                    && !relative.contains("uninstall")
+                    && !relative.contains("Uninstall")
+                    && !relative.contains("unins")
+                    && !relative.contains("Installer")
+                    && !relative.contains("setup")
+                    && !relative.contains("{")
+                    && !relative.contains("dll")
                 {
                     let display_icon_without_prefix = add_drive_to_path(&relative);
                     if !options.contains(&display_icon_without_prefix) {
@@ -95,8 +94,14 @@ pub(crate) fn getprogrampaths() -> Result<Vec<String>, String> {
 fn generate_icon(display_icon_without_prefix: &str) -> Output {
     let args = [
         format!("'{}'", display_icon_without_prefix),
-        format!("'{}'", file_name_without_extension(&display_icon_without_prefix)),
-        format!("'{}'", "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons"),
+        format!(
+            "'{}'",
+            file_name_without_extension(&display_icon_without_prefix)
+        ),
+        format!(
+            "'{}'",
+            "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons"
+        ),
     ];
 
     let python_command_with_args = format!(
@@ -149,13 +154,30 @@ fn file_name_without_extension(path: &str) -> String {
 }
 
 fn sanitize_path(path: &str) -> String {
-    if let Some(index) = path.find(',') { path[..index].to_string() } else { path.to_string() }
+    if let Some(index) = path.find(',') {
+        path[..index].to_string()
+    } else {
+        path.to_string()
+    }
 }
 #[tauri::command]
-pub(crate) fn runprogram(path: String) -> Result<(), String> {
-    println!("{path}");
-    Command::new(path)
-        .spawn()
-        .map_err(|err| err.to_string())?;
+pub(crate) fn run_program(path: String) -> Result<(), String> {
+    if path.contains("powershell")
+        || path.contains("node")
+        || (path.contains("cmd.exe") && path.contains("System"))
+    {
+        println!("{}", file_name_without_extension(&path));
+        Command::new("sh")
+            .current_dir("C:/Users/")
+            .args(&[
+                "-c",
+                &format!("start {}", file_name_without_extension(&path)),
+            ])
+            .spawn()
+            .map_err(|err| err.to_string())?;
+    } else {
+        println!("{}", path);
+        Command::new(path).spawn().map_err(|err| err.to_string())?;
+    }
     Ok(())
 }
