@@ -11,13 +11,13 @@
     import { invoke } from "@tauri-apps/api/tauri";
     import { onMount } from "svelte";
     import { WebviewWindow } from "@tauri-apps/api/window";
-    import { fixBackslashes } from "./utils/fixBackslahes";
-    import { delay } from "./utils/delay";
-    import { createSettingsWindow } from "./utils/createSettingsWindow";
+    import { FixBackslashes } from "./utils/FixBackslahes";
+    import { Delay } from "./utils/Delay";
+    import { CreateSettingsWindow } from "./utils/CreateSettingsWindow";
     import { emit, listen } from "@tauri-apps/api/event";
     import Button from "$lib/components/ui/button/button.svelte";
     import Reload from "svelte-radix/Reload.svelte";
-    import { SortPathsByFileNames } from "./utils/sortPathsByFileNames";
+    import { SortPathsByFileNames } from "./utils/SortPathsByFileNames";
     import { Toaster } from "$lib/components/ui/sonner";
     import type { programs_payload } from "./types/programs_payload";
     import type { apps } from "./types/apps";
@@ -39,33 +39,33 @@
         await register("Control+Shift+K", async () => {
             console.log(open);
             if (open == true) {
-                closeMenu();
+                CloseMenu();
             } else {
-                openMenu();
+                OpenMenu();
             }
         });
         await unregister("Escape");
         await register("Escape", async () => {
-            closeMenu();
+            CloseMenu();
         });
         console.log("registered keyboard shortcut");
     });
-    export async function openMenu() {
+    export async function OpenMenu() {
         await appWindow.unminimize();
         appWindow.setFocus();
-        await delay(500);
+        await Delay(500);
         open = true;
     }
-    export async function closeMenu() {
+    export async function CloseMenu() {
         open = false;
-        await delay(201);
+        await Delay(201);
         appWindow.minimize();
     }
     onMount(() => {
         async function handleKeydown(e: KeyboardEvent) {
             if (e.key === "Enter") {
                 invoke("run_program", { path: value });
-                closeMenu();
+                CloseMenu();
             }
         }
         if (programs && Object.keys(programs).length == 0) {
@@ -87,9 +87,9 @@
         };
     });
 
-    async function openSettingsWindow() {
+    async function OpenSettingsWindow() {
         if (WebviewWindow.getByLabel("Settings") == null)
-            createSettingsWindow(programs);
+            CreateSettingsWindow(programs);
         else {
             if (WebviewWindow.getByLabel("Settings")?.isMinimized()) {
                 WebviewWindow.getByLabel("Settings")?.unminimize();
@@ -120,9 +120,9 @@
                             class="overflow-y-hidden"
                             on:click={() => {
                                 invoke("run_program", {
-                                    path: fixBackslashes(app.path),
+                                    path: FixBackslashes(app.path),
                                 });
-                                closeMenu();
+                                CloseMenu();
                             }}
                         >
                             <Command.Item>
@@ -141,7 +141,7 @@
         </Command.List>
         <Button
             class="absolute bottom-4 right-6 rounded-full z-40 h-10 w-10 p-2 border cursor-pointer"
-            on:click={openSettingsWindow}
+            on:click={OpenSettingsWindow}
         >
             <QuestionMark class="dark:white light:black" />
         </Button>
