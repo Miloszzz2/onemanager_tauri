@@ -3,88 +3,90 @@
     import QuestionMark from "svelte-radix/QuestionMark.svelte";
     import * as Command from "$lib/components/ui/command";
     import { appWindow } from "@tauri-apps/api/window";
-    import { unregister, register } from "@tauri-apps/api/globalShortcut";
+    import {
+        unregister,
+        register,
+        isRegistered,
+    } from "@tauri-apps/api/globalShortcut";
     import { invoke } from "@tauri-apps/api/tauri";
     import { onMount } from "svelte";
     import { WebviewWindow } from "@tauri-apps/api/window";
     import { fixBackslashes } from "./utils/fixBackslahes";
-    import { getAppNameFromPath } from "./utils/getAppNameFromPath";
     import { delay } from "./utils/delay";
     import { createSettingsWindow } from "./utils/createSettingsWindow";
     import { emit, listen } from "@tauri-apps/api/event";
     import Button from "$lib/components/ui/button/button.svelte";
     import Reload from "svelte-radix/Reload.svelte";
+    import { SortPathsByFileNames } from "./utils/sortPathsByFileNames";
+    import { Toaster } from "$lib/components/ui/sonner";
+    import type { programs_payload } from "./types/programs_payload";
+    import type { apps } from "./types/apps";
     /* Imports here */
 
-    let open = true;
-    let inputvalue = "";
-    let value = "";
-    let programs: string[] = [];
+    export let open: boolean = true;
+
+    let value: string = "";
+    let programs: apps[] = [];
+
+    function getProgramPaths() {
+        invoke("getprogrampaths").then((message: apps[] | any) => {
+            programs = SortPathsByFileNames(message);
+        });
+    }
 
     window.addEventListener("DOMContentLoaded", async () => {
-        invoke("getprogrampaths").then((message) => {
-            programs = fixBackslashes(message);
-        });
-        appWindow.setFocus();
-
         await unregister("Control+Shift+K");
         await register("Control+Shift+K", async () => {
+            console.log(open);
             if (open == true) {
                 closeMenu();
             } else {
-                await appWindow.unminimize();
-                appWindow.setFocus();
-                await delay(500);
-                open = true;
+                openMenu();
             }
-            console.log(open);
         });
-
-        console.log("registered");
+        await unregister("Escape");
+        await register("Escape", async () => {
+            closeMenu();
+        });
+        console.log("registered keyboard shortcut");
     });
-
-    async function closeMenu() {
-        inputvalue = "";
+    export async function openMenu() {
+        await appWindow.unminimize();
+        appWindow.setFocus();
+        await delay(500);
+        open = true;
+    }
+    export async function closeMenu() {
         open = false;
         await delay(201);
         appWindow.minimize();
     }
-    const sendProgramPathsInterval = setInterval(() => {
-        console.log("sending paths...");
-        emit("click", {
-            programs,
-        });
-    }, 2000);
     onMount(() => {
         async function handleKeydown(e: KeyboardEvent) {
             if (e.key === "Enter") {
                 invoke("run_program", { path: value });
                 closeMenu();
-            } else if (e.key === "Delete") {
-                let indextodel = 0;
-                programs.forEach((el, index) => {
-                    if (el.toLowerCase() === value.toLowerCase())
-                        indextodel = index;
-                });
-                programs.splice(indextodel, 1);
-                programs = programs;
-                console.log(programs.length);
-            } else if (e.key === "Escape") {
-                closeMenu();
             }
         }
+        if (programs && Object.keys(programs).length == 0) {
+            console.log("pobieram programy ponownie");
+            getProgramPaths();
+        }
 
-        listen("stopSending", () => {
-            clearInterval(sendProgramPathsInterval);
-            console.log("stopped sending");
+        listen("programs_request", () => {
+            emit("programs_send", { programs });
         });
 
-        console.log(programs.length);
+        listen("programs-visibility-changed", (e: programs_payload) => {
+            programs = e.payload.programs;
+        });
+
         document.addEventListener("keydown", handleKeydown);
         return () => {
             document.removeEventListener("keydown", handleKeydown);
         };
     });
+
     async function openSettingsWindow() {
         if (WebviewWindow.getByLabel("Settings") == null)
             createSettingsWindow(programs);
@@ -97,59 +99,51 @@
             }
         }
     }
-    console.log(appWindow.label);
-    function SortPathsByFileNames(paths: string[]) {
-        paths.sort((a, b) => {
-            const nameA = getAppNameFromPath(a); // Convert names to uppercase for case-insensitive comparison
-            const nameB = getAppNameFromPath(b);
-            if (nameA < nameB) {
-                return -1; // a should come before b in the sorted order
-            }
-            if (nameA > nameB) {
-                return 1; // a should come after b in the sorted order
-            }
-            return 0; // a and b are equivalent
-        });
-        return paths;
-    }
+    let inputValue = "";
 </script>
 
-{#if programs.length > 0}
+{#if programs && Object.keys(programs).length != 0}
     <Command.Dialog bind:open bind:value>
-        <Command.Input placeholder="Type a command or search..." />
+        <Command.Input
+            bind:value={inputValue}
+            placeholder="Type a command or search...."
+            on:input={() => console.log("input")}
+        />
         <Command.List>
             <Command.Empty>No results found.</Command.Empty>
             <Command.Group heading="Apps">
-                {#each SortPathsByFileNames(programs) as app}
-                    <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <div
-                        class="overflow-y-hidden"
-                        on:click={() => {
-                            invoke("run_program", { path: app });
-                            closeMenu();
-                        }}
-                    >
-                        <Command.Item>
-                            <img
-                                class="h-6 w-6 mr-3"
-                                src={`app_icons/${getAppNameFromPath(app)}.png`}
-                                alt="app_icons/HWMonitor.png"
-                            />
-                            <span>{getAppNameFromPath(app)}</span>
-                        </Command.Item>
-                    </div>
+                {#each programs as app}
+                    {#if app.visible}
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <div
+                            class="overflow-y-hidden"
+                            on:click={() => {
+                                invoke("run_program", {
+                                    path: fixBackslashes(app.path),
+                                });
+                                closeMenu();
+                            }}
+                        >
+                            <Command.Item>
+                                <!-- svelte-ignore a11y-missing-attribute -->
+                                <img
+                                    class="h-6 w-6 mr-3"
+                                    src={`app_icons/${app.name}.png`}
+                                />
+                                <span>{app.name}</span>
+                            </Command.Item>
+                        </div>
+                    {/if}
                 {/each}
             </Command.Group>
             <Command.Separator />
         </Command.List>
         <Button
             class="absolute bottom-4 right-6 rounded-full z-40 h-10 w-10 p-2 border cursor-pointer"
+            on:click={openSettingsWindow}
         >
-            <QuestionMark
-                on:click={openSettingsWindow}
-                class="dark:white light:black"
-            />
+            <QuestionMark class="dark:white light:black" />
         </Button>
     </Command.Dialog>
 {:else}
@@ -163,4 +157,5 @@
         </Button>
     </div>
 {/if}
+<Toaster />
 <ModeWatcher />

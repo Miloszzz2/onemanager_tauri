@@ -1,5 +1,7 @@
 import { WebviewWindow } from "@tauri-apps/api/window";
-export async function createSettingsWindow(programs: string[]) {
+import { emit } from "@tauri-apps/api/event";
+import type { apps } from "src/types/apps";
+export async function createSettingsWindow(programs: apps[]) {
     const webview = new WebviewWindow("Settings", {
         url: "../settings.html",
         width: 1000,
@@ -10,8 +12,4 @@ export async function createSettingsWindow(programs: string[]) {
         alwaysOnTop: true,
         resizable: false,
     });
-    webview.emit("tauri://created", function () {
-        console.log("robie okno");
-    });
-    webview.once("tauri://error", function (e) {});
 }

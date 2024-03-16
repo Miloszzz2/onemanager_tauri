@@ -18,21 +18,6 @@
     import Help from "$lib/components/settings/Help.svelte";
     /* Imports here */
 
-    let programs: string[];
-    type programs = {
-        payload: {
-            programs: string[];
-        };
-    };
-    onMount(async () => {
-        console.log("robie");
-        await listen("click", (e: programs) => {
-            programs = e.payload.programs;
-            console.log(programs);
-            emit("stopSending");
-        });
-    });
-
     export let defaultCollapsed = false;
     export let navCollapsedSize = 6;
 
