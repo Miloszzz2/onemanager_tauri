@@ -1,7 +1,21 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 #[cfg(target_os = "windows")]
 mod commands {
+    pub(crate) mod get_windows_apps;
     pub(crate) mod programs;
+    mod structs {
+        pub mod program;
+    }
+    mod utils {
+        pub mod add_drive_to_file;
+        pub mod file_exist;
+        pub mod file_name_without_extension;
+        pub mod generate_icon;
+        pub mod get_app_name_from_path;
+        pub mod get_app_path_from_name;
+        pub mod replace_double_backslashes;
+        pub mod sanitize_path;
+    }
 }
 
 fn main() {

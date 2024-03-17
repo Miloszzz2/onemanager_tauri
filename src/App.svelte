@@ -3,15 +3,10 @@
     import QuestionMark from "svelte-radix/QuestionMark.svelte";
     import * as Command from "$lib/components/ui/command";
     import { appWindow } from "@tauri-apps/api/window";
-    import {
-        unregister,
-        register,
-        isRegistered,
-    } from "@tauri-apps/api/globalShortcut";
+    import { unregister, register } from "@tauri-apps/api/globalShortcut";
     import { invoke } from "@tauri-apps/api/tauri";
     import { onMount } from "svelte";
     import { WebviewWindow } from "@tauri-apps/api/window";
-    import { FixBackslashes } from "./utils/FixBackslahes";
     import { Delay } from "./utils/Delay";
     import { CreateSettingsWindow } from "./utils/CreateSettingsWindow";
     import { emit, listen } from "@tauri-apps/api/event";
@@ -31,10 +26,12 @@
     function getProgramPaths() {
         invoke("getprogrampaths").then((message: apps[] | any) => {
             programs = SortPathsByFileNames(message);
+            console.log(Object.keys(programs).length);
         });
     }
 
     window.addEventListener("DOMContentLoaded", async () => {
+        await unregister("Enter");
         await unregister("Control+Shift+K");
         await register("Control+Shift+K", async () => {
             console.log(open);
@@ -50,24 +47,18 @@
         });
         console.log("registered keyboard shortcut");
     });
-    export async function OpenMenu() {
+    async function OpenMenu() {
         await appWindow.unminimize();
         appWindow.setFocus();
         await Delay(500);
         open = true;
     }
-    export async function CloseMenu() {
+    async function CloseMenu() {
         open = false;
         await Delay(201);
         appWindow.minimize();
     }
     onMount(() => {
-        async function handleKeydown(e: KeyboardEvent) {
-            if (e.key === "Enter") {
-                invoke("run_program", { path: value });
-                CloseMenu();
-            }
-        }
         if (programs && Object.keys(programs).length == 0) {
             console.log("pobieram programy ponownie");
             getProgramPaths();
@@ -80,11 +71,6 @@
         listen("programs-visibility-changed", (e: programs_payload) => {
             programs = e.payload.programs;
         });
-
-        document.addEventListener("keydown", handleKeydown);
-        return () => {
-            document.removeEventListener("keydown", handleKeydown);
-        };
     });
 
     async function OpenSettingsWindow() {
@@ -99,13 +85,11 @@
             }
         }
     }
-    let inputValue = "";
 </script>
 
 {#if programs && Object.keys(programs).length != 0}
     <Command.Dialog bind:open bind:value>
         <Command.Input
-            bind:value={inputValue}
             placeholder="Type a command or search...."
             on:input={() => console.log("input")}
         />
@@ -120,7 +104,7 @@
                             class="overflow-y-hidden"
                             on:click={() => {
                                 invoke("run_program", {
-                                    path: FixBackslashes(app.path),
+                                    path: app.path,
                                 });
                                 CloseMenu();
                             }}

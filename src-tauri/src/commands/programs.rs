@@ -1,17 +1,17 @@
+use super::get_windows_apps::get_windows_programs;
+use super::structs::program::Program;
+use super::utils::add_drive_to_file::add_drive_to_path;
+use super::utils::file_exist::file_exists;
+use super::utils::file_name_without_extension::file_name_without_extension;
+use super::utils::generate_icon::generate_icon;
+use super::utils::get_app_name_from_path::get_app_name_from_path;
+use super::utils::replace_double_backslashes::replace_double_backslashes;
+use super::utils::sanitize_path::sanitize_path;
 use std::env;
-use std::path::Path;
-use std::process::{Command, Output};
+use std::process::Command;
 use walkdir::WalkDir;
-#[derive(Clone, serde::Serialize)]
-pub struct Program {
-    path: String,
-    visible: bool,
-    name: String,
-}
-
-#[tauri::command]
-pub(crate) fn getprogrampaths() -> Result<Vec<Program>, String> {
-    let apps = installed::list().map_err(|err| err.to_string())?;
+pub fn getprogrampaths_fn() -> Vec<Program> {
+    let apps = installed::list().map_err(|err| err.to_string()).unwrap();
     let mut options: Vec<Program> = vec![];
 
     for app in apps {
@@ -56,7 +56,8 @@ pub(crate) fn getprogrampaths() -> Result<Vec<Program>, String> {
             }
         }
     }
-    for entry in WalkDir::new("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs")
+
+    for entry in WalkDir::new("C:\\ProgramData\\Microsoft\\Windows\\Start Menu")
         .into_iter()
         .filter_map(|e| e.ok())
     {
@@ -79,10 +80,12 @@ pub(crate) fn getprogrampaths() -> Result<Vec<Program>, String> {
                 {
                     let display_icon_without_prefix = add_drive_to_path(&relative);
 
-                    if options
-                        .iter()
-                        .all(|s| s.path != display_icon_without_prefix)
-                    {
+                    if !options.iter().any(|s| {
+                        s.name
+                            == get_app_name_from_path(&replace_double_backslashes(
+                                &display_icon_without_prefix.to_string(),
+                            ))
+                    }) {
                         let pathtocheck = format!(
                             "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons/{}.png",
                             file_name_without_extension(&display_icon_without_prefix)
@@ -145,10 +148,12 @@ pub(crate) fn getprogrampaths() -> Result<Vec<Program>, String> {
                 {
                     let display_icon_without_prefix = add_drive_to_path(&relative);
 
-                    if options
-                        .iter()
-                        .all(|s| s.path != display_icon_without_prefix)
-                    {
+                    if !options.iter().any(|s| {
+                        s.name
+                            == get_app_name_from_path(&replace_double_backslashes(
+                                &display_icon_without_prefix.to_string(),
+                            ))
+                    }) {
                         let pathtocheck = format!(
                             "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons/{}.png",
                             file_name_without_extension(&display_icon_without_prefix)
@@ -178,88 +183,16 @@ pub(crate) fn getprogrampaths() -> Result<Vec<Program>, String> {
             }
         }
     }
-    Ok(options)
+    let windows_programs: Vec<Program> = get_windows_programs();
+    options.extend(windows_programs);
+    return options;
+}
+#[tauri::command]
+pub(crate) fn getprogrampaths() -> Result<Vec<Program>, String> {
+    let program_paths = getprogrampaths_fn();
+    Ok(program_paths)
 }
 
-fn generate_icon(display_icon_without_prefix: &str) -> Output {
-    let args = [
-        format!("'{}'", display_icon_without_prefix),
-        format!(
-            "'{}'",
-            file_name_without_extension(&display_icon_without_prefix)
-        ),
-        format!(
-            "'{}'",
-            "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons"
-        ),
-    ];
-
-    let python_command_with_args = format!(
-        "source venv/Scripts/activate && python main.py {}",
-        args.join(" ")
-    );
-
-    let output = Command::new("sh")
-        .current_dir("./iconExtract")
-        .arg("-c")
-        .arg(python_command_with_args)
-        .output()
-        .expect("Failed to execute command");
-    return output;
-}
-
-fn replace_double_backslashes(s: &str) -> String {
-    s.replace("\\\\", "\\")
-}
-fn add_drive_to_path(s: &str) -> String {
-    let mut localappdata = String::new();
-    if let Ok(path) = env::var("LOCALAPPDATA") {
-        localappdata = path;
-    } else {
-        println!("Environment variable %APPDATA% not found.");
-    }
-    if let Some(index) = s.rfind("..\\") {
-        let mut full_path = if s.contains("Local") {
-            localappdata.to_owned()
-        } else {
-            "C:\\".to_owned()
-        };
-        full_path.push_str(&s[index + 3..]);
-        // Move index 4 positions to exclude "..//"
-        return full_path.replace("\\Local", "\\");
-    }
-    // If "..//" is not found, return the original string
-    s.to_string()
-}
-
-fn file_exists(file_path: String) -> bool {
-    let path = Path::new(&file_path);
-    path.exists() && path.is_file()
-}
-
-fn file_name_without_extension(path: &str) -> String {
-    let file_name = Path::new(path)
-        .file_stem()
-        .expect("Invalid path")
-        .to_string_lossy()
-        .to_string();
-
-    let mut file_name_without_extension = file_name.to_owned();
-
-    if let Some(first_char) = file_name_without_extension.get_mut(0..1) {
-        first_char.make_ascii_uppercase();
-    }
-
-    file_name_without_extension
-}
-
-fn sanitize_path(path: &str) -> String {
-    if let Some(index) = path.find(',') {
-        path[..index].to_string()
-    } else {
-        path.to_string()
-    }
-}
 #[tauri::command]
 pub(crate) fn run_program(path: String) -> Result<(), String> {
     if path.contains("powershell")
@@ -280,20 +213,4 @@ pub(crate) fn run_program(path: String) -> Result<(), String> {
         Command::new(path).spawn().map_err(|err| err.to_string())?;
     }
     Ok(())
-}
-
-fn get_app_name_from_path(app: &str) -> String {
-    if let Some(last_index) = app.rfind('\\') {
-        let app_name = &app[last_index + 1..app.len() - 4];
-        let first_char = app_name
-            .chars()
-            .next()
-            .unwrap_or('_')
-            .to_uppercase()
-            .to_string();
-        let rest_of_name = &app_name[1..];
-        format!("{}{}", first_char, rest_of_name)
-    } else {
-        String::new()
-    }
 }
