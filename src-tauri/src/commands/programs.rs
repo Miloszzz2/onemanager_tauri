@@ -1,5 +1,4 @@
 use super::get_windows_apps::get_windows_programs;
-use super::structs::program::Program;
 use super::utils::add_drive_to_file::add_drive_to_path;
 use super::utils::file_exist::file_exists;
 use super::utils::file_name_without_extension::file_name_without_extension;
@@ -7,6 +6,7 @@ use super::utils::generate_icon::generate_icon;
 use super::utils::get_app_name_from_path::get_app_name_from_path;
 use super::utils::replace_double_backslashes::replace_double_backslashes;
 use super::utils::sanitize_path::sanitize_path;
+use crate::structs::program::Program;
 use std::env;
 use std::process::Command;
 use walkdir::WalkDir;
@@ -99,15 +99,13 @@ pub fn getprogrampaths_fn() -> Vec<Program> {
                                 &display_icon_without_prefix.to_string(),
                             )),
                         };
-                        if file_exists(display_icon_without_prefix.clone()) {
-                            if !file_exists(pathtocheck) {
-                                let output = generate_icon(&display_icon_without_prefix);
-                                if output.status.success() {
-                                    options.push(new_program);
-                                }
-                            } else {
+                        if !file_exists(pathtocheck) {
+                            let output = generate_icon(&display_icon_without_prefix);
+                            if output.status.success() {
                                 options.push(new_program);
                             }
+                        } else {
+                            options.push(new_program);
                         }
                     }
                 }
@@ -169,6 +167,7 @@ pub fn getprogrampaths_fn() -> Vec<Program> {
                                     &display_icon_without_prefix.to_string(),
                                 )),
                             };
+
                             if !file_exists(pathtocheck) {
                                 let output = generate_icon(&display_icon_without_prefix);
                                 if output.status.success() {
@@ -188,23 +187,24 @@ pub fn getprogrampaths_fn() -> Vec<Program> {
     return options;
 }
 #[tauri::command]
-pub(crate) fn getprogrampaths() -> Result<Vec<Program>, String> {
+pub fn getprogrampaths() -> Result<Vec<Program>, String> {
     let program_paths = getprogrampaths_fn();
     Ok(program_paths)
 }
 
 #[tauri::command]
-pub(crate) fn run_program(path: String) -> Result<(), String> {
+pub fn run_program(path: String) -> Result<(), String> {
     if path.contains("powershell")
         || path.contains("node")
+        || path.contains("bun")
         || (path.contains("cmd.exe") && path.contains("System"))
     {
         println!("{}", file_name_without_extension(&path));
-        Command::new("sh")
+        Command::new("cmd")
             .current_dir("C:/Users/")
             .args(&[
-                "-c",
-                &format!("start {}", file_name_without_extension(&path)),
+                "/C",
+                &format!("start cmd /k {}", file_name_without_extension(&path)),
             ])
             .spawn()
             .map_err(|err| err.to_string())?;

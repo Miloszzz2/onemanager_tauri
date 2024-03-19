@@ -1,11 +1,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 #[cfg(target_os = "windows")]
 mod commands {
-    pub(crate) mod get_windows_apps;
-    pub(crate) mod programs;
-    mod structs {
-        pub mod program;
-    }
+    pub mod get_windows_apps;
+    pub mod programs;
     mod utils {
         pub mod add_drive_to_file;
         pub mod file_exist;
@@ -17,7 +15,10 @@ mod commands {
         pub mod sanitize_path;
     }
 }
-
+mod db {}
+mod structs {
+    pub mod program;
+}
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![

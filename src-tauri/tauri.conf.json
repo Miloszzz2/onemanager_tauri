@@ -14,7 +14,15 @@
             "all": false,
             "shell": {
                 "all": false,
-                "open": true
+                "open": true,
+                "sidecar": true,
+                "scope": [
+                    {
+                        "name": "./bin/iconExtract",
+                        "sidecar": true,
+                        "args": true
+                    }
+                ]                
             },
             "window": {
                 "create": true,
@@ -45,6 +53,9 @@
             "csp": null
         },
         "bundle": {
+            "externalBin": [
+                "./bin/iconExtract"
+            ],
             "active": true,
             "targets": "all",
             "identifier": "com.tauri.dev",

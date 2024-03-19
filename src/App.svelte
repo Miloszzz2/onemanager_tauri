@@ -135,7 +135,7 @@
         class="h-full flex items-center justify-center rounded-lg bg-background"
         style="height:349px;"
     >
-        <Button variant={"ghost"}>
+        <Button variant={"ghost"} size={"lg"}>
             <Reload class="mr-2 h-4 w-4 animate-spin" />
             Loading...
         </Button>
