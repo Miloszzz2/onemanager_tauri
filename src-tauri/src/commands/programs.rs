@@ -198,6 +198,8 @@ pub fn run_program(path: String) -> Result<(), String> {
         || path.contains("node")
         || path.contains("bun")
         || (path.contains("cmd.exe") && path.contains("System"))
+        || path.contains("bun")
+        || file_name_without_extension(&path).to_lowercase() == "wsl"
     {
         println!("{}", file_name_without_extension(&path));
         Command::new("cmd")
