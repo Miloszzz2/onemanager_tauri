@@ -21,8 +21,14 @@
                         "name": "./bin/iconExtract",
                         "sidecar": true,
                         "args": true
+                    },
+                    {
+                        "name": "./bin/currentSong2",
+                        "sidecar": true,
+                        "args": true
                     }
-                ]                
+                    
+                ]
             },
             "window": {
                 "create": true,
@@ -36,7 +42,6 @@
                 "all": true
             }
         },
-
         "windows": [
             {
                 "title": "onemanager",
@@ -54,7 +59,8 @@
         },
         "bundle": {
             "externalBin": [
-                "./bin/iconExtract"
+                "./bin/iconExtract",
+                "./bin/currentSong2"
             ],
             "active": true,
             "targets": "all",

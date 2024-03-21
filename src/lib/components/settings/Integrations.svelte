@@ -47,7 +47,7 @@
                     <img src={integration.image} alt="" class="h-12 w-12" />
                     <div>
                         <Card.Title>{integration.name}</Card.Title>
-                        <Card.Description
+                        <Card.Description class="mt-2"
                             >{integration.description}</Card.Description
                         >
                     </div>

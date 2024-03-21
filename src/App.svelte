@@ -16,6 +16,7 @@
     import { Toaster } from "$lib/components/ui/sonner";
     import type { programs_payload } from "./types/programs_payload";
     import type { apps } from "./types/apps";
+    import type { current_song } from "./types/current_song";
     /* Imports here */
 
     export let open: boolean = true;
@@ -67,7 +68,9 @@
         listen("programs_request", () => {
             emit("programs_send", { programs });
         });
-
+        listen("current_song", (e: current_song) => {
+            console.log(e.payload.message);
+        });
         listen("programs-visibility-changed", (e: programs_payload) => {
             programs = e.payload.programs;
         });
