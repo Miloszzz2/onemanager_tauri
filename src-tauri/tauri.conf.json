@@ -23,7 +23,7 @@
                         "args": true
                     },
                     {
-                        "name": "./bin/currentSong2",
+                        "name": "./bin/currentSong3",
                         "sidecar": true,
                         "args": true
                     }
@@ -60,7 +60,7 @@
         "bundle": {
             "externalBin": [
                 "./bin/iconExtract",
-                "./bin/currentSong2"
+                "./bin/currentSong3"
             ],
             "active": true,
             "targets": "all",

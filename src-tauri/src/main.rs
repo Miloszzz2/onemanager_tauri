@@ -32,7 +32,7 @@ fn main() {
             crate::commands::programs::run_program
         ])
         .setup(|app| {
-            let (mut rx, _) = Command::new_sidecar("currentSong2")
+            let (mut rx, _) = Command::new_sidecar("currentSong3")
                 .expect("failed to create `` binary command")
                 .spawn()
                 .expect("Failed to spawn sidecar");
