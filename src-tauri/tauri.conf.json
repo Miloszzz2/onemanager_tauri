@@ -36,7 +36,9 @@
                 "unminimize": true,
                 "setFocus": true,
                 "startDragging": true,
-                "close": true
+                "close": true,
+                "show": true,
+                "hide": true
             },
             "globalShortcut": {
                 "all": true
@@ -45,13 +47,41 @@
         "windows": [
             {
                 "title": "onemanager",
+                "label": "main",
                 "width": 512,
                 "height": 349,
                 "center": true,
                 "transparent": true,
                 "decorations": false,
                 "resizable": false,
-                "alwaysOnTop": true
+                "alwaysOnTop": true,
+                "visible": false
+            },
+            {
+                "label": "Settings",
+                "title": "Settings",
+                "url": "settings.html",
+                "width": 1000,
+                "height": 600,
+                "decorations": false,
+                "alwaysOnTop": true,
+                "resizable": false,
+                "visible": false,
+                "closable": false,
+                "skipTaskbar": true,
+                "transparent": true
+            },
+            {
+                "label": "Boarding",
+                "title": "Boarding",
+                "url": "boarding.html",
+                "width": 1000,
+                "height": 600,
+                "visible": true,
+                "resizable": false,
+                "decorations": false,
+                "transparent": true,
+                "center": true
             }
         ],
         "security": {

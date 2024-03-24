@@ -17,6 +17,9 @@ dependencies:
   cmdk-sv:
     specifier: ^0.0.13
     version: 0.0.13(svelte@4.2.11)
+  embla-carousel-svelte:
+    specifier: ^8.0.0
+    version: 8.0.0(svelte@4.2.11)
   lucide-svelte:
     specifier: ^0.352.0
     version: 0.352.0(svelte@4.2.11)
@@ -942,6 +945,28 @@ packages:
   /electron-to-chromium@1.4.678:
     resolution: {integrity: sha512-NbdGC2p0O5Q5iVhLEsNBSfytaw7wbEFJlIvaF71wi6QDtLAph5/rVogjyOpf/QggJIt8hNK3KdwNJnc2bzckbw==}
     dev: true
+
+  /embla-carousel-reactive-utils@8.0.0(embla-carousel@8.0.0):
+    resolution: {integrity: sha512-JCw0CqCXI7tbHDRogBb9PoeMLyjEC1vpN0lDOzUjmlfVgtfF+ffLaOK8bVtXVUEbNs/3guGe3NSzA5J5aYzLzw==}
+    peerDependencies:
+      embla-carousel: 8.0.0
+    dependencies:
+      embla-carousel: 8.0.0
+    dev: false
+
+  /embla-carousel-svelte@8.0.0(svelte@4.2.11):
+    resolution: {integrity: sha512-twoIN3jpSZB2Gc7pI2mfN0vjmXgZQbwgQ4T4OUa2OEXBU/jRbevhb9kd2RtqzU2lalB3j2a1lCE5Ey9DQtxr6Q==}
+    peerDependencies:
+      svelte: ^3.49.0 || ^4.0.0
+    dependencies:
+      embla-carousel: 8.0.0
+      embla-carousel-reactive-utils: 8.0.0(embla-carousel@8.0.0)
+      svelte: 4.2.11
+    dev: false
+
+  /embla-carousel@8.0.0:
+    resolution: {integrity: sha512-ecixcyqS6oKD2nh5Nj5MObcgoSILWNI/GtBxkidn5ytFaCCmwVHo2SecksaQZHcARMMpIR2dWOlSIdA1LkZFUA==}
+    dev: false
 
   /emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}

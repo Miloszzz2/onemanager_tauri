@@ -8,7 +8,6 @@
     import { onMount } from "svelte";
     import { WebviewWindow } from "@tauri-apps/api/window";
     import { Delay } from "./utils/Delay";
-    import { CreateSettingsWindow } from "./utils/CreateSettingsWindow";
     import { emit, listen } from "@tauri-apps/api/event";
     import Button from "$lib/components/ui/button/button.svelte";
     import Reload from "svelte-radix/Reload.svelte";
@@ -16,7 +15,7 @@
     import { Toaster } from "$lib/components/ui/sonner";
     import type { programs_payload } from "./types/programs_payload";
     import type { apps } from "./types/apps";
-    import Music from "$lib/components/main/Music.svelte";
+    import Music from "./pages/components/main/music.svelte";
     /* Imports here */
 
     export let open: boolean = true;
@@ -75,16 +74,7 @@
     });
 
     async function OpenSettingsWindow() {
-        if (WebviewWindow.getByLabel("Settings") == null)
-            CreateSettingsWindow(programs);
-        else {
-            if (WebviewWindow.getByLabel("Settings")?.isMinimized()) {
-                WebviewWindow.getByLabel("Settings")?.unminimize();
-                WebviewWindow.getByLabel("Settings")?.setFocus();
-            } else {
-                WebviewWindow.getByLabel("Settings")?.setFocus();
-            }
-        }
+        WebviewWindow.getByLabel("Settings")?.show();
     }
 </script>
 
@@ -123,7 +113,6 @@
                     {/if}
                 {/each}
             </Command.Group>
-            <Command.Separator />
         </Command.List>
         <Button
             class="absolute bottom-4 right-6 rounded-full z-40 h-10 w-10 p-2 border cursor-pointer"

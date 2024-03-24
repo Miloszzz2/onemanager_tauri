@@ -1,21 +1,18 @@
 <script lang="ts">
     import { ModeWatcher } from "mode-watcher";
-    import { onMount } from "svelte";
-    import { emit, listen } from "@tauri-apps/api/event";
-    import Nav from "$lib/components/settings/nav.svelte";
-    import { primaryRoutes } from "$lib/components/settings/config";
+    import Nav from "../components/settings/nav.svelte";
+    import { primaryRoutes } from "../components/settings/config";
     import * as Resizable from "$lib/components/ui/resizable";
-    import ChevronLeft from "lucide-svelte/icons/chevron-left";
-    import { Router, Link, Route } from "svelte-routing";
+    import { Router, Route } from "svelte-routing";
     import X from "lucide-svelte/icons/x";
     import Minus from "lucide-svelte/icons/minus";
     import { appWindow } from "@tauri-apps/api/window";
-    import Overview from "$lib/components/settings/Overview.svelte";
-    import Apps from "$lib/components/settings/Apps.svelte";
-    import Integrations from "$lib/components/settings/Integrations.svelte";
-    import Profile from "$lib/components/settings/Profile.svelte";
-    import Preferences from "$lib/components/settings/Preferences.svelte";
-    import Help from "$lib/components/settings/Help.svelte";
+    import Overview from "../components/settings/Overview.svelte";
+    import Apps from "../components/settings/Apps.svelte";
+    import Integrations from "../components/settings/Integrations.svelte";
+    import Profile from "../components/settings/Profile.svelte";
+    import Preferences from "../components/settings/Preferences.svelte";
+    import Help from "../components/settings/Help.svelte";
     /* Imports here */
 
     export let defaultCollapsed = false;
@@ -53,9 +50,6 @@
                     <div
                         class="flex gap-3 items-center py-3 pt-3 pl-3 hover:opacity-70 transition-all
             duration-300 cursor-pointer"
-                        on:click={() => {
-                            appWindow.close();
-                        }}
                     >
                         <p class="pl-1 text-md font-medium">Settings</p>
                     </div>
@@ -79,7 +73,7 @@
                         <!-- svelte-ignore a11y-click-events-have-key-events -->
                         <div
                             on:click={() => {
-                                appWindow.close();
+                                appWindow.hide();
                             }}
                         >
                             <X class="cursor-pointer" size={22} />
