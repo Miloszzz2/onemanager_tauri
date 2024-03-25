@@ -1,5 +1,6 @@
 export type apps = {
     path: string,
     visible: boolean,
-    name: string
+    name: string,
+    favourite: boolean
 }

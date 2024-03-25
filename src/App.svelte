@@ -15,7 +15,7 @@
     import { Toaster } from "$lib/components/ui/sonner";
     import type { programs_payload } from "./types/programs_payload";
     import type { apps } from "./types/apps";
-    import Music from "./pages/components/main/music.svelte";
+    import Music from "$components/main/Music.svelte";
     /* Imports here */
 
     export let open: boolean = true;
@@ -59,11 +59,13 @@
         appWindow.minimize();
     }
     onMount(() => {
+        listen("user_programs", (e: programs_payload) => {
+            programs = e.payload.programs;
+        });
         if (programs && Object.keys(programs).length == 0) {
             console.log("pobieram programy ponownie");
             getProgramPaths();
         }
-
         listen("programs_request", () => {
             emit("programs_send", { programs });
         });
@@ -87,7 +89,33 @@
         <Command.List>
             <Command.Empty>No results found.</Command.Empty>
             <Music />
-            <Command.Group heading="Apps">
+            <Command.Group heading="Favourites">
+                {#each programs as app}
+                    {#if app.favourite}
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <div
+                            class="overflow-y-hidden"
+                            on:click={() => {
+                                invoke("run_program", {
+                                    path: app.path,
+                                });
+                                CloseMenu();
+                            }}
+                        >
+                            <Command.Item>
+                                <!-- svelte-ignore a11y-missing-attribute -->
+                                <img
+                                    class="h-6 w-6 mr-3"
+                                    src={`app_icons/${app.name}.png`}
+                                />
+                                <span>{app.name}</span>
+                            </Command.Item>
+                        </div>
+                    {/if}
+                {/each}
+            </Command.Group>
+            <Command.Group heading="All Apps">
                 {#each programs as app}
                     {#if app.visible}
                         <!-- svelte-ignore a11y-no-static-element-interactions -->

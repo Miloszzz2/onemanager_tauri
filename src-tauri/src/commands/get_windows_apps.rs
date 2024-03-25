@@ -26,6 +26,7 @@ pub fn get_windows_programs() -> Vec<Program> {
             path: path.to_string(),
             visible: true,
             name: get_app_name_from_path(&path),
+            favourite: false,
         };
         let pathtocheck = format!(
             "C:/Users/PC/Documents/Projects/Rust/tauri/onemanager/public/app_icons/{}.png",

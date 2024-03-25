@@ -44,6 +44,7 @@ pub fn getprogrampaths_fn() -> Vec<Program> {
                     name: get_app_name_from_path(&replace_double_backslashes(
                         &display_icon_without_prefix.to_string(),
                     )),
+                    favourite: false,
                 };
                 if !file_exists(pathtocheck) {
                     let output = generate_icon(&display_icon_without_prefix);
@@ -98,6 +99,7 @@ pub fn getprogrampaths_fn() -> Vec<Program> {
                             name: get_app_name_from_path(&replace_double_backslashes(
                                 &display_icon_without_prefix.to_string(),
                             )),
+                            favourite: false,
                         };
                         if !file_exists(pathtocheck) {
                             let output = generate_icon(&display_icon_without_prefix);
@@ -166,6 +168,7 @@ pub fn getprogrampaths_fn() -> Vec<Program> {
                                 name: get_app_name_from_path(&replace_double_backslashes(
                                     &display_icon_without_prefix.to_string(),
                                 )),
+                                favourite: false,
                             };
 
                             if !file_exists(pathtocheck) {
