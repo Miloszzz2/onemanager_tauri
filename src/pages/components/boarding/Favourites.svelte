@@ -1,16 +1,12 @@
 <script lang="ts">
     import * as Carousel from "$lib/components/ui/carousel/index.js";
     import * as Card from "$lib/components/ui/card/index.js";
-    import { onMount } from "svelte";
-    import { invoke } from "@tauri-apps/api";
-    import { SortPathsByFileNames } from "$utils/SortPathsByFileNames";
     import type { apps } from "src/types/apps";
     import Label from "$lib/components/ui/label/label.svelte";
-    import Switch from "$lib/components/ui/switch/switch.svelte";
     import { Star } from "lucide-svelte";
+    import type Database from "tauri-plugin-sql-api";
     export let programs: apps[];
     function ChangeAppFavouriteValue(index: number) {
-        console.log("robie");
         programs[index].favourite = !programs[index].favourite;
     }
 </script>

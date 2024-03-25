@@ -24,7 +24,8 @@
     "svelte-sonner": "^0.3.19",
     "tailwind-merge": "^2.2.1",
     "tailwind-variants": "^0.2.0",
-    "tauri-plugin-authenticator-api": "github:tauri-apps/tauri-plugin-authenticator#v1"
+    "tauri-plugin-authenticator-api": "github:tauri-apps/tauri-plugin-authenticator#v1",
+    "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.0.1",

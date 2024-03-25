@@ -25,7 +25,7 @@
 
     function getProgramPaths() {
         invoke("getprogrampaths").then((message: apps[] | any) => {
-            programs = SortPathsByFileNames(message);
+            programs = SortPathsByFileNames(message as apps[]);
             console.log(Object.keys(programs).length);
         });
     }

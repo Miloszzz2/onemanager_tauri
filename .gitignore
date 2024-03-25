@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 public/app_icons
+
+.env

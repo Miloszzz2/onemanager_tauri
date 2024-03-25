@@ -14,8 +14,6 @@ pub fn current_music(app: tauri::AppHandle) -> Result<(), String> {
         println!("Process is already running.");
         return Ok(());
     }
-
-    println!("{}", "robie");
     let (mut rx, _) = Command::new_sidecar("currentSong3")
         .expect("failed to create `` binary command")
         .encoding(encoding_rs::WINDOWS_1250)

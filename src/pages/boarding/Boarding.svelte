@@ -17,6 +17,8 @@
     import { invoke } from "@tauri-apps/api";
     import { SortPathsByFileNames } from "$utils/SortPathsByFileNames";
     import type { apps } from "src/types/apps";
+    import { db_pool } from "$db/db";
+    import type Database from "tauri-plugin-sql-api";
 
     let api: CarouselAPI;
     let current = 0;
@@ -24,13 +26,14 @@
     let programs: apps[] = [];
     function getProgramPaths() {
         invoke("getprogrampaths").then((message: apps[] | any) => {
-            programs = SortPathsByFileNames(message);
+            programs = SortPathsByFileNames(message as apps[]);
             console.log(programs);
             console.log(Object.keys(programs).length);
         });
     }
 
-    onMount(() => {
+    onMount(async () => {
+        const db: Database = await db_pool();
         if (programs && Object.keys(programs).length == 0) {
             console.log("pobieram programy ponownie");
             getProgramPaths();
