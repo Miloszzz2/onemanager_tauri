@@ -81,8 +81,12 @@
             <Favourites {programs} />
         </Carousel.Content>
         <div class="flex gap-3 justify-end px-4 py-2 absolute bottom-3 right-2">
-            <Button variant={"outline"} on:click={() => api.scrollPrev()}
-                >Previous</Button
+            <Button
+                variant={"outline"}
+                on:click={() => {
+                    current > 0 ? current-- : "";
+                    api.scrollPrev();
+                }}>Previous</Button
             >
             <Button
                 on:click={() => {
