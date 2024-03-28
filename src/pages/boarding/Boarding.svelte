@@ -76,8 +76,8 @@
     <Carousel.Root class="w-full" bind:api>
         <Carousel.Content class="h-[550px] ">
             <Welcome />
-            <Browser />
             <Login />
+            <Browser />
             <Favourites {programs} />
         </Carousel.Content>
         <div class="flex gap-3 justify-end px-4 py-2 absolute bottom-3 right-2">

@@ -17,13 +17,13 @@
 <Carousel.Item class="h-full">
     <div class="">
         <Card.Root class="border-none">
-            <Card.Content class=" flex flex-col w-full h-[490px] ">
+            <Card.Content class="p-0 flex flex-col w-full h-[490px] pl-4">
                 <Label class="text-gray-400 text-left pt-6 pb-2"
                     >Select your default browser app. It will be used as your
                     default primary brwoser. You can change it whenever you want
                     in settings</Label
                 >
-                <div class="grid grid-cols-3 gap-3 w-full mt-5">
+                <div class="grid grid-cols-3 gap-3 w-11/12 mt-5">
                     {#each browsers as browser, index}
                         <Card.Root
                             class={`${active == index ? "border-white " : ""} border-2 cursor-pointer flex flex-col items-center justify-center`}

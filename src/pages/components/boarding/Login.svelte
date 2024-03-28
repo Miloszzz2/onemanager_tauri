@@ -7,24 +7,24 @@
     import Label from "$lib/components/ui/label/label.svelte";
     import { cn } from "$lib/utils.js";
     import { LoaderCircle } from "lucide-svelte";
+    import { sendSignInLinkToEmail } from "firebase/auth";
+    import { auth } from "../../../services/firebase/app";
+    let email = "";
+    /*const actionCodeSettings = {
+        url: "",
+        handleCodeInApp: true,
+    };*/
     let className: string | undefined | null = undefined;
     export { className as class };
 
     let isLoading = false;
-    async function onSubmit() {
-        isLoading = true;
-
-        setTimeout(() => {
-            isLoading = false;
-        }, 3000);
-    }
 </script>
 
-<Carousel.Item class="h-full">
+<Carousel.Item class="h-full p-0">
     <div class="">
         <Card.Root class="border-none">
             <Card.Content
-                class=" flex items-center justify-center w-full h-[490px] "
+                class="p-0 flex items-center justify-center w-full h-[490px] "
             >
                 <div class={cn("grid gap-6 w-72", className)} {...$$restProps}>
                     <h1
@@ -32,30 +32,59 @@
                     >
                         Login
                     </h1>
-                    <form on:submit|preventDefault={onSubmit}>
-                        <div class="grid gap-2">
-                            <div class="grid gap-1">
-                                <Label class="sr-only" for="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    placeholder="name@example.com"
-                                    type="email"
-                                    autocapitalize="none"
-                                    autocomplete="email"
-                                    autocorrect="off"
-                                    disabled={isLoading}
-                                />
-                            </div>
-                            <Button type="submit" disabled={isLoading}>
-                                {#if isLoading}
-                                    <LoaderCircle
-                                        class="mr-2 h-4 w-4 animate-spin"
-                                    />
-                                {/if}
-                                Sign In with Email
-                            </Button>
+
+                    <div class="grid gap-2">
+                        <div class="grid gap-1">
+                            <Label class="sr-only" for="email">Email</Label>
+                            <Input
+                                id="email"
+                                placeholder="name@example.com"
+                                type="email"
+                                autocapitalize="none"
+                                autocomplete="email"
+                                autocorrect="off"
+                                disabled={isLoading}
+                                bind:value={email}
+                            />
                         </div>
-                    </form>
+                        <Button
+                            type="submit"
+                            disabled={isLoading}
+                            on:click={() => {
+                                {
+                                    /* console.log(email);
+                                    if (email != "") {
+                                        sendSignInLinkToEmail(
+                                            auth,
+                                            email,
+                                            actionCodeSettings,
+                                        )
+                                            .then(() => {
+                                                window.localStorage.setItem(
+                                                    "emailForSignIn",
+                                                    email,
+                                                );
+                                            })
+                                            .catch((error) => {
+                                                const errorCode = error.code;
+                                                const errorMessage =
+                                                    error.message;
+                                                console.log(errorMessage);
+                                            });
+                                    }
+                                */
+                                }
+                            }}
+                        >
+                            {#if isLoading}
+                                <LoaderCircle
+                                    class="mr-2 h-4 w-4 animate-spin"
+                                />
+                            {/if}
+                            Sign In with Email
+                        </Button>
+                    </div>
+
                     <div class="relative">
                         <div class="absolute inset-0 flex items-center">
                             <span class="w-full border-t" />
