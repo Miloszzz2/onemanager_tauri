@@ -19,11 +19,37 @@
     import type { apps } from "src/types/apps";
     import { db_pool } from "$db/db";
     import type Database from "tauri-plugin-sql-api";
+    import { getAuth, onAuthStateChanged, type User } from "firebase/auth";
+    const auth = getAuth();
+    let current_user: User | null = null;
+    onAuthStateChanged(auth, (user) => {
+        current_user = user;
+        if (
+            user &&
+            localStorage.getItem("configuration_completed") ==
+                JSON.stringify(true)
+        ) {
+            appWindow.hide();
+            WebviewWindow.getByLabel("main")?.show();
+            emit("user_programs", { programs: programs });
+        }
+    });
 
     let api: CarouselAPI;
     let current = 0;
-    let count = 4;
+    let count = 0;
     let programs: apps[] = [];
+    let configuration_completed = localStorage.getItem(
+        "configuration_completed",
+    );
+    $: if (api) {
+        count = api.scrollSnapList().length;
+        current = api.selectedScrollSnap() + 1;
+        api.on("select", () => {
+            current = api.selectedScrollSnap() + 1;
+        });
+        console.log(count);
+    }
     function getProgramPaths() {
         invoke("getprogrampaths").then((message: apps[] | any) => {
             programs = SortPathsByFileNames(message as apps[]);
@@ -33,6 +59,10 @@
     }
 
     onMount(async () => {
+        configuration_completed = JSON.stringify(
+            localStorage.getItem("configuration_completed"),
+        );
+        console.log(configuration_completed);
         const db: Database = await db_pool();
         if (programs && Object.keys(programs).length == 0) {
             console.log("pobieram programy ponownie");
@@ -75,32 +105,48 @@
     </div>
     <Carousel.Root class="w-full" bind:api>
         <Carousel.Content class="h-[550px] ">
-            <Welcome />
+            {#if configuration_completed == "null"}
+                <Welcome />
+            {:else if configuration_completed == "true"}{/if}
             <Login />
-            <Browser />
-            <Favourites {programs} />
+            {#if configuration_completed == "null"}
+                <Browser />
+                <Favourites {programs} />
+            {:else if configuration_completed == "true"}{/if}
         </Carousel.Content>
-        <div class="flex gap-3 justify-end px-4 py-2 absolute bottom-3 right-2">
-            <Button
-                variant={"outline"}
-                on:click={() => {
-                    current > 0 ? current-- : "";
-                    api.scrollPrev();
-                }}>Previous</Button
+        {#if count > 1}
+            <div
+                class="flex gap-3 justify-end px-4 py-2 absolute bottom-3 right-2"
             >
-            <Button
-                on:click={() => {
-                    current++;
-                    if (current == count) {
-                        appWindow.hide();
-                        WebviewWindow.getByLabel("main")?.show();
-                        emit("user_programs", { programs: programs });
-                    } else {
-                        api.scrollNext();
-                    }
-                }}>Next</Button
-            >
-        </div>
+                <Button
+                    variant={"outline"}
+                    on:click={() => {
+                        api.scrollPrev();
+                    }}>Previous</Button
+                >
+
+                {#if count > 1 && (current != 2 || current_user)}
+                    <Button
+                        on:click={() => {
+                            if (current == count && count > 1) {
+                                appWindow.hide();
+
+                                localStorage.setItem(
+                                    "configuration_completed",
+                                    JSON.stringify(true),
+                                );
+
+                                WebviewWindow.getByLabel("main")?.show();
+                                emit("user_programs", { programs: programs });
+                                location.reload();
+                            } else {
+                                api.scrollNext();
+                            }
+                        }}>Next</Button
+                    >
+                {/if}
+            </div>
+        {/if}
     </Carousel.Root>
     <ModeWatcher />
 {/if}

@@ -14,7 +14,7 @@
 <Carousel.Item class="!overflow-y-scroll">
     <div class="">
         <Card.Root class="border-none ">
-            <Card.Content class="p-0 pl-6 flex flex-col  w-full "
+            <Card.Content class="p-0 pl-10 flex flex-col  w-full "
                 ><Label class="text-gray-400 text-left pt-6 pb-2"
                     >Select your most-used apps, which will be displayed on top
                     in OneManager</Label

@@ -16,6 +16,8 @@
     import type { programs_payload } from "./types/programs_payload";
     import type { apps } from "./types/apps";
     import Music from "$components/main/Music.svelte";
+    import { db_pool } from "$db/db";
+    import type Database from "tauri-plugin-sql-api";
     /* Imports here */
 
     export let open: boolean = true;
@@ -58,7 +60,8 @@
         await Delay(201);
         appWindow.minimize();
     }
-    onMount(() => {
+    onMount(async () => {
+        const db: Database = await db_pool();
         listen("user_programs", (e: programs_payload) => {
             programs = e.payload.programs;
         });
@@ -76,7 +79,7 @@
     });
 
     async function OpenSettingsWindow() {
-        WebviewWindow.getByLabel("Settings")?.show();
+        await WebviewWindow.getByLabel("Settings")?.show();
     }
 </script>
 

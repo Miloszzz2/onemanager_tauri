@@ -35,6 +35,7 @@ fn main() {
                 .add_migrations(&database_url, get_migrations())
                 .build(),
         )
+        .plugin(tauri_plugin_oauth::init())
         .invoke_handler(tauri::generate_handler![
             crate::commands::programs::getprogrampaths,
             crate::commands::programs::run_program,
