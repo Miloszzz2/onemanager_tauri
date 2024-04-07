@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "rename": "node scripts/rename.js"
   },
   "dependencies": {
     "@tauri-apps/api": "^1.5.2",
@@ -29,10 +30,12 @@
     "tauri-plugin-sql-api": "github:tauri-apps/tauri-plugin-sql#v1"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.6.4",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "@tauri-apps/cli": "^1.5.8",
     "@tsconfig/svelte": "^5.0.2",
     "autoprefixer": "^10.4.16",
+    "execa": "^8.0.1",
     "postcss": "^8.4.32",
     "postcss-load-config": "^5.0.2",
     "svelte": "^4.2.8",

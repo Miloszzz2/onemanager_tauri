@@ -8,7 +8,10 @@
 </script>
 
 <CommandPrimitive.List
-    class={cn("max-h-[297px] overflow-y-auto overflow-x-hidden", className)}
+    class={cn(
+        "max-h-[297px] overflow-y-auto scroll-smooth overflow-x-hidden",
+        className,
+    )}
     {...$$restProps}
 >
     <slot />

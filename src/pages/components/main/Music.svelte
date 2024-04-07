@@ -1,12 +1,16 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api";
     import { emit, listen } from "@tauri-apps/api/event";
+    import { Command } from "@tauri-apps/api/shell";
     import type { current_song } from "src/types/current_song";
     import { onMount } from "svelte";
     import Play from "lucide-svelte/icons/play";
     import SkipForward from "lucide-svelte/icons/skip-forward";
     import SkipBack from "lucide-svelte/icons/skip-back";
     $: current_song_value = "";
+    const nextTrackCommand = Command.sidecar("./bin/nextTrack");
+    const playCommand = Command.sidecar("./bin/play");
+    const prevTrackCommand = Command.sidecar("./bin/prevTrack");
     onMount(() => {
         if (current_song_value == "") {
             console.log("pobieram");
@@ -35,9 +39,33 @@
             </h1>
         {/if}
         <div class="flex justify-center items-center gap-3 pt-2">
-            <SkipBack class="cursor-pointer" />
-            <Play class="cursor-pointer" />
-            <SkipForward class="cursor-pointer" />
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div
+                on:click={async () => {
+                    await prevTrackCommand.execute();
+                }}
+            >
+                <SkipBack class="cursor-pointer" />
+            </div>
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div
+                on:click={async () => {
+                    await playCommand.execute();
+                }}
+            >
+                <Play class="cursor-pointer" />
+            </div>
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <!-- svelte-ignore a11y-no-static-element-interactions -->
+            <div
+                on:click={async () => {
+                    await nextTrackCommand.execute();
+                }}
+            >
+                <SkipForward class="cursor-pointer" />
+            </div>
         </div>
     </div>
 </div>

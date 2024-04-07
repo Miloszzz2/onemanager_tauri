@@ -26,8 +26,27 @@
                         "name": "./bin/currentSong3",
                         "sidecar": true,
                         "args": true
+                    },
+                    {
+                        "name": "./bin/nextTrack",
+                        "sidecar": true,
+                        "args": false
+                    },
+                    {
+                        "name": "./bin/play",
+                        "sidecar": true,
+                        "args": false
+                    },
+                    {
+                        "name": "./bin/pause",
+                        "sidecar": true,
+                        "args": false
+                    },
+                    {
+                        "name": "./bin/prevTrack",
+                        "sidecar": true,
+                        "args": false
                     }
-                    
                 ]
             },
             "window": {
@@ -90,7 +109,11 @@
         "bundle": {
             "externalBin": [
                 "./bin/iconExtract",
-                "./bin/currentSong3"
+                "./bin/currentSong3",
+                "./bin/prevTrack",
+                "./bin/nextTrack",
+                "./bin/play",
+                "./bin/pause"
             ],
             "active": true,
             "targets": "all",
