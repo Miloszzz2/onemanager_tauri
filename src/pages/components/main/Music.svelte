@@ -7,18 +7,20 @@
     import Play from "lucide-svelte/icons/play";
     import SkipForward from "lucide-svelte/icons/skip-forward";
     import SkipBack from "lucide-svelte/icons/skip-back";
-    $: current_song_value = "";
+    let current_song_value = "";
     const nextTrackCommand = Command.sidecar("./bin/nextTrack");
     const playCommand = Command.sidecar("./bin/play");
     const prevTrackCommand = Command.sidecar("./bin/prevTrack");
-    onMount(() => {
+
+    if (current_song_value == "") {
+        console.log("pobieram");
+        invoke("current_music");
         if (current_song_value == "") {
-            console.log("pobieram");
-            invoke("current_music");
-            if (current_song_value == "") {
-                current_song_value = localStorage.getItem("lastSong") as string;
-            }
+            current_song_value = localStorage.getItem("lastSong") as string;
         }
+    }
+    console.log(current_song_value);
+    onMount(() => {
         listen("current_song", (e: current_song) => {
             console.log("recieved");
             current_song_value = e.payload.message;

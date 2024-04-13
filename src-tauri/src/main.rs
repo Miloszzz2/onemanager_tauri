@@ -9,6 +9,7 @@ mod commands {
     pub mod current_music;
     pub mod get_windows_apps;
     pub mod programs;
+    pub mod search;
     mod utils {
         pub mod add_drive_to_file;
         pub mod file_exist;
@@ -40,6 +41,7 @@ fn main() {
             crate::commands::programs::getprogrampaths,
             crate::commands::programs::run_program,
             crate::commands::current_music::current_music,
+            crate::commands::search::search,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

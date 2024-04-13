@@ -15,16 +15,16 @@
     import { Toaster } from "$lib/components/ui/sonner";
     import type { programs_payload } from "./types/programs_payload";
     import type { apps } from "./types/apps";
-    import Music from "$components/main/Music.svelte";
     import { db_pool } from "$db/db";
     import type Database from "tauri-plugin-sql-api";
+    import { Globe } from "lucide-svelte";
     /* Imports here */
 
     export let open: boolean = true;
 
     let value: string = "";
     let programs: apps[] = [];
-
+    $: mode = "search";
     function getProgramPaths() {
         invoke("getprogrampaths").then((message: apps[] | any) => {
             programs = SortPathsByFileNames(message as apps[]);
@@ -87,63 +87,71 @@
     <Command.Dialog bind:open bind:value>
         <Command.Input
             placeholder="Type a command or search...."
-            on:input={() => console.log("input")}
+            on:change={() => console.log("Hello world")}
+            bind:mode
         />
         <Command.List>
-            <Command.Empty>No results found.</Command.Empty>
-            <Music />
-            <Command.Group heading="Favourites">
-                {#each programs as app}
-                    {#if app.favourite}
-                        <!-- svelte-ignore a11y-no-static-element-interactions -->
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        <div
-                            class="overflow-y-hidden"
-                            on:click={() => {
-                                invoke("run_program", {
-                                    path: app.path,
-                                });
-                                CloseMenu();
-                            }}
-                        >
-                            <Command.Item>
-                                <!-- svelte-ignore a11y-missing-attribute -->
-                                <img
-                                    class="h-6 w-6 mr-3"
-                                    src={`app_icons/${app.name}.png`}
-                                />
-                                <span>{app.name}</span>
-                            </Command.Item>
-                        </div>
-                    {/if}
-                {/each}
-            </Command.Group>
-            <Command.Group heading="All Apps">
-                {#each programs as app}
-                    {#if app.visible}
-                        <!-- svelte-ignore a11y-no-static-element-interactions -->
-                        <!-- svelte-ignore a11y-click-events-have-key-events -->
-                        <div
-                            class="overflow-y-hidden"
-                            on:click={() => {
-                                invoke("run_program", {
-                                    path: app.path,
-                                });
-                                CloseMenu();
-                            }}
-                        >
-                            <Command.Item>
-                                <!-- svelte-ignore a11y-missing-attribute -->
-                                <img
-                                    class="h-6 w-6 mr-3"
-                                    src={`app_icons/${app.name}.png`}
-                                />
-                                <span>{app.name}</span>
-                            </Command.Item>
-                        </div>
-                    {/if}
-                {/each}
-            </Command.Group>
+            {#if mode == "search"}
+                <Command.Empty>No results found.</Command.Empty>
+                <Command.Group heading="Favourites">
+                    {#each programs as app}
+                        {#if app.favourite}
+                            <!-- svelte-ignore a11y-no-static-element-interactions -->
+                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                            <div
+                                class="overflow-y-hidden"
+                                on:click={() => {
+                                    invoke("run_program", {
+                                        path: app.path,
+                                    });
+                                    CloseMenu();
+                                }}
+                            >
+                                <Command.Item>
+                                    <!-- svelte-ignore a11y-missing-attribute -->
+                                    <img
+                                        class="h-6 w-6 mr-3"
+                                        src={`app_icons/${app.name}.png`}
+                                    />
+                                    <span>{app.name}</span>
+                                </Command.Item>
+                            </div>
+                        {/if}
+                    {/each}
+                </Command.Group>
+                <Command.Group heading="All Apps">
+                    {#each programs as app}
+                        {#if app.visible}
+                            <!-- svelte-ignore a11y-no-static-element-interactions -->
+                            <!-- svelte-ignore a11y-click-events-have-key-events -->
+                            <div
+                                class="overflow-y-hidden"
+                                on:click={() => {
+                                    invoke("run_program", {
+                                        path: app.path,
+                                    });
+                                    CloseMenu();
+                                }}
+                            >
+                                <Command.Item>
+                                    <!-- svelte-ignore a11y-missing-attribute -->
+                                    <img
+                                        class="h-6 w-6 mr-3"
+                                        src={`app_icons/${app.name}.png`}
+                                    />
+                                    <span>{app.name}</span>
+                                </Command.Item>
+                            </div>
+                        {/if}
+                    {/each}
+                </Command.Group>
+            {:else}
+                <div class="flex justify-center h-[80px] items-center gap-2">
+                    <p class="text-muted-foreground font-medium">
+                        Searching mode
+                    </p>
+                </div>
+            {/if}
         </Command.List>
         <Button
             class="absolute bottom-4 right-6 rounded-full z-40 h-10 w-10 p-2 border cursor-pointer"
@@ -151,6 +159,7 @@
         >
             <QuestionMark class="dark:white light:black" />
         </Button>
+        <Toaster />
     </Command.Dialog>
 {:else}
     <div
@@ -163,5 +172,5 @@
         </Button>
     </div>
 {/if}
-<Toaster />
+
 <ModeWatcher />

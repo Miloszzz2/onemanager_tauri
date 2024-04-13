@@ -29,6 +29,10 @@
                             class={`${active == index ? "border-white " : ""} border-2 cursor-pointer flex flex-col items-center justify-center`}
                             on:click={() => {
                                 active = index;
+                                localStorage.setItem(
+                                    "defaultBrowser",
+                                    browsers[active].name,
+                                );
                                 console.log(active);
                             }}
                         >
