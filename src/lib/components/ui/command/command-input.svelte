@@ -12,6 +12,7 @@
     export { className as class };
     export let value: string = "";
     let url: string;
+    const regex = /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\.[a-zA-Z]{2,})?$/;
     function isValidHttpUrl(url: string) {
         try {
             const newUrl = new URL(url);
@@ -37,9 +38,11 @@
                 toast("Search mode");
             }
             if (e.key == "Enter" && mode == "browser") {
-                if (!isValidHttpUrl(value))
+                if (!isValidHttpUrl(value) && !regex.test(value))
                     url = "https://google.com/search?q=" + value;
-                else url = value;
+                else if (!isValidHttpUrl(value) && regex.test(value)) {
+                    url = "https://" + value;
+                } else if (isValidHttpUrl(value)) url = value;
                 invoke("search", {
                     url: url,
                 });

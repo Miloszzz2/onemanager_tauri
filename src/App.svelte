@@ -148,7 +148,7 @@
             {:else}
                 <div class="flex justify-center h-[80px] items-center gap-2">
                     <p class="text-muted-foreground font-medium">
-                        Searching mode
+                        Browser mode
                     </p>
                 </div>
             {/if}
