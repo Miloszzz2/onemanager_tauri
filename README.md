@@ -13,6 +13,8 @@ A powerful application for managing tasks and apps running built with Tauri and 
 
 ## Demo
 ![image](https://github.com/Miloszzz2/onemanager_tauri/assets/97192271/bd8bd53b-59ce-426a-99a3-194690445994)
+![onemanger1](https://github.com/Miloszzz2/onemanager_tauri/assets/97192271/900a685c-a2e8-4e47-b343-6c4a3d983c8a)
+
 
 ## Features
 - Task management with a user-friendly interface.
@@ -30,7 +32,7 @@ Make sure you have Node.js, npm, and Rust installed. You can download Node.js an
 
 ### Clone the repository
 ```bash
-git clone https://github.com/yourusername/onemanager-app.git
+git clone https://github.com/Miloszzz2/onemanager-app.git
 cd onemanager-app
 ```
 ## Installation
@@ -57,12 +59,6 @@ This will create an optimized production build of the app.
 - Tauri
 - Svelte
 
-## Contributing
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
-
-1. Fork the Project
-2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
-3. Commit your Changes (git commit -m 'Add some AmazingFeature')
-4. Push to the Branch (git push origin feature/AmazingFeature)
-5. Open a Pull Request
+## License
+Distributed under the MIT License. See \`LICENSE\` for more information.
 
