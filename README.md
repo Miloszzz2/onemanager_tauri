@@ -13,6 +13,7 @@ A powerful application for managing tasks and apps running built with Tauri and 
 
 ## Demo
 ![image](https://github.com/Miloszzz2/onemanager_tauri/assets/97192271/bd8bd53b-59ce-426a-99a3-194690445994)
+
 ![onemanger1](https://github.com/Miloszzz2/onemanager_tauri/assets/97192271/900a685c-a2e8-4e47-b343-6c4a3d983c8a)
 
 
