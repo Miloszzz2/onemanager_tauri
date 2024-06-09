@@ -27,15 +27,12 @@
             if (value === "" && e.key == "/" && mode != "browser") {
                 e.preventDefault();
                 mode = "browser";
-
-                toast("Browser mode");
             } else if (
                 e.key === "Backspace" &&
                 value == "" &&
                 mode == "browser"
             ) {
-                mode = "search";
-                toast("Search mode");
+                mode = "search";               
             }
             if (e.key == "Enter" && mode == "browser") {
                 if (!isValidHttpUrl(value) && !regex.test(value))
